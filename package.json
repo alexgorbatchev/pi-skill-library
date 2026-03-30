@@ -1,0 +1,57 @@
+{
+  "name": "@alexgorbatchev/pi-skill-library",
+  "version": "0.1.0",
+  "description": "Pi extension that exposes skills-library roots through /library:<skill-name> commands.",
+  "type": "module",
+  "author": "Alex Gorbatchev",
+  "license": "MIT",
+  "homepage": "https://github.com/alexgorbatchev/pi-skill-library#readme",
+  "bugs": {
+    "url": "https://github.com/alexgorbatchev/pi-skill-library/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alexgorbatchev/pi-skill-library.git"
+  },
+  "packageManager": "bun@1.3.10",
+  "keywords": [
+    "pi-package",
+    "pi-extension",
+    "skills",
+    "skill",
+    "library"
+  ],
+  "files": [
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "pi": {
+    "extensions": [
+      "./src/index.ts"
+    ]
+  },
+  "peerDependencies": {
+    "@mariozechner/pi-coding-agent": "*"
+  },
+  "devDependencies": {
+    "@mariozechner/pi-coding-agent": "0.64.0",
+    "@types/node": "24.7.2",
+    "@typescript/native-preview": "7.0.0-dev.20260330.1",
+    "dprint": "0.53.0",
+    "oxlint": "1.56.0",
+    "typescript": "6.0.2"
+  },
+  "scripts": {
+    "dev": "bun x pi -e ./src/index.ts",
+    "check": "bun run typecheck && bun run lint && bun run format:check && bun run verify:pi-load",
+    "typecheck": "tsgo --noEmit -p tsconfig.json",
+    "lint": "oxlint --config oxlintrc.json .",
+    "format": "dprint fmt",
+    "format:check": "dprint check",
+    "verify:pi-load": "PI_OFFLINE=1 bun x pi --no-extensions -e ./src/index.ts --list-models > /dev/null 2>&1"
+  }
+}
