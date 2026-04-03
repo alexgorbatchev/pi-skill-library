@@ -1,4 +1,4 @@
-import type { ILibrarySummary } from './types.js';
+import type { ILibrarySummary } from "./types.js";
 
 export function groupLibrarySummariesByScope(librarySummaries: ILibrarySummary[]): Map<string, ILibrarySummary[]> {
   const librarySummariesByScope = new Map<string, ILibrarySummary[]>();
@@ -9,7 +9,7 @@ export function groupLibrarySummariesByScope(librarySummaries: ILibrarySummary[]
     librarySummariesByScope.set(displayScope, existingSummaries);
   }
 
-  const orderedScopes = ['project', 'user', 'path'];
+  const orderedScopes = ["project", "user", "path"];
   const orderedLibrarySummariesByScope = new Map<string, ILibrarySummary[]>();
   for (const orderedScope of orderedScopes) {
     const scopedSummaries = librarySummariesByScope.get(orderedScope);
@@ -20,7 +20,7 @@ export function groupLibrarySummariesByScope(librarySummaries: ILibrarySummary[]
     orderedLibrarySummariesByScope.set(
       orderedScope,
       [...scopedSummaries].sort((leftSummary, rightSummary) =>
-        leftSummary.libraryPath.localeCompare(rightSummary.libraryPath)
+        leftSummary.libraryPath.localeCompare(rightSummary.libraryPath),
       ),
     );
   }
@@ -28,9 +28,9 @@ export function groupLibrarySummariesByScope(librarySummaries: ILibrarySummary[]
   return orderedLibrarySummariesByScope;
 }
 
-function toDisplayScope(scope: ILibrarySummary['scope']): string {
-  if (scope === 'temporary') {
-    return 'path';
+function toDisplayScope(scope: ILibrarySummary["scope"]): string {
+  if (scope === "temporary") {
+    return "path";
   }
 
   return scope;

@@ -38,20 +38,22 @@
     "@mariozechner/pi-coding-agent": "*"
   },
   "devDependencies": {
+    "@alexgorbatchev/typescript-ai-policy": "^1.0.1",
     "@mariozechner/pi-coding-agent": "0.64.0",
     "@types/node": "24.7.2",
     "@typescript/native-preview": "7.0.0-dev.20260330.1",
-    "dprint": "0.53.0",
-    "oxlint": "1.56.0",
+    "oxfmt": "^0.42.0",
+    "oxlint": "^1.57.0",
+    "tsx": "^4.21.0",
     "typescript": "6.0.2"
   },
   "scripts": {
     "dev": "bun x pi -e ./src/index.ts",
     "check": "bun run typecheck && bun run lint && bun run format:check && bun run verify:pi-load",
     "typecheck": "tsgo --noEmit -p tsconfig.json",
-    "lint": "oxlint --config oxlintrc.json .",
-    "format": "dprint fmt",
-    "format:check": "dprint check",
+    "lint": "bash scripts/lint.sh",
+    "format": "bash scripts/format.sh",
+    "format:check": "bash scripts/format-check.sh",
     "verify:pi-load": "PI_OFFLINE=1 bun x pi --no-extensions -e ./src/index.ts --list-models > /dev/null 2>&1"
   }
 }

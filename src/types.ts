@@ -1,4 +1,4 @@
-import type { Skill } from '@mariozechner/pi-coding-agent';
+import type { Skill } from "@mariozechner/pi-coding-agent";
 
 export interface ILibraryCommand {
   skillName: string;
@@ -7,7 +7,7 @@ export interface ILibraryCommand {
 
 export interface ILibrarySummary {
   libraryPath: string;
-  scope: 'project' | 'user' | 'temporary';
+  scope: "project" | "user" | "temporary";
   skillNames: string[];
 }
 
@@ -23,3 +23,10 @@ export interface ILibrarySkillDiscovery {
   libraryPaths: string[];
   librarySummaries: ILibrarySummary[];
 }
+
+export interface IMessageContentPart {
+  type: string;
+  text?: string;
+}
+
+export type MessageContent = string | IMessageContentPart[];

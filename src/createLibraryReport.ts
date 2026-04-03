@@ -1,6 +1,6 @@
-import { groupLibrarySummariesByScope } from './groupLibrarySummariesByScope.js';
-import { replaceHomeDirectoryWithTilde } from './replaceHomeDirectoryWithTilde.js';
-import type { ILibraryReportDetails, ILibrarySkillDiscovery, ILibrarySummary } from './types.js';
+import { groupLibrarySummariesByScope } from "./groupLibrarySummariesByScope.js";
+import { replaceHomeDirectoryWithTilde } from "./replaceHomeDirectoryWithTilde.js";
+import type { ILibraryReportDetails, ILibrarySkillDiscovery, ILibrarySummary } from "./types.js";
 
 export function createLibraryReport(librarySkillDiscovery: ILibrarySkillDiscovery): string {
   return createLibraryReportFromDetails({
@@ -10,10 +10,10 @@ export function createLibraryReport(librarySkillDiscovery: ILibrarySkillDiscover
 }
 
 export function createLibraryReportFromDetails(details: ILibraryReportDetails): string {
-  const lines = ['[Skills Library]'];
+  const lines = ["[Skills Library]"];
   if (details.librarySummaries.length === 0) {
-    lines.push('  No library skills were discovered.');
-    return lines.join('\n');
+    lines.push("  No library skills were discovered.");
+    return lines.join("\n");
   }
 
   const librarySummariesByScope = groupLibrarySummariesByScope(details.librarySummaries);
@@ -25,13 +25,13 @@ export function createLibraryReportFromDetails(details: ILibraryReportDetails): 
   }
 
   if (details.diagnostics.length > 0) {
-    lines.push('  diagnostics');
+    lines.push("  diagnostics");
     for (const diagnostic of details.diagnostics) {
       lines.push(`    ${replaceHomeDirectoryWithTilde(diagnostic)}`);
     }
   }
 
-  return lines.join('\n');
+  return lines.join("\n");
 }
 
 function appendLibrarySummary(lines: string[], librarySummary: ILibrarySummary): void {

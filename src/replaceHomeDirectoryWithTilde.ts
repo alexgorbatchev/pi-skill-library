@@ -1,5 +1,5 @@
-import { homedir } from 'node:os';
-import path from 'node:path';
+import { homedir } from "node:os";
+import path from "node:path";
 
 export function replaceHomeDirectoryWithTilde(value: string): string {
   const homeDirectoryPath = homedir();
@@ -7,7 +7,7 @@ export function replaceHomeDirectoryWithTilde(value: string): string {
   const normalizedValue = path.normalize(value);
 
   if (normalizedValue === normalizedHomeDirectoryPath) {
-    return '~';
+    return "~";
   }
 
   const homeDirectoryPrefix = `${normalizedHomeDirectoryPath}${path.sep}`;
