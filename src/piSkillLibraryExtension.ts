@@ -88,9 +88,9 @@ export default function piSkillLibraryExtension(pi: ExtensionAPI): void {
       details: createLibraryReportDetails(librarySkillDiscovery),
     });
   });
-  pi.on("session_switch", onSessionChanged);
-  pi.on("session_fork", onSessionChanged);
-  pi.on("session_tree", onSessionChanged);
+  pi.on("session_before_switch", onSessionChanged);
+  pi.on("session_before_fork", onSessionChanged);
+  pi.on("session_before_tree", onSessionChanged);
 
   pi.registerCommand(INFO_COMMAND_NAME, {
     description: "Print the discovered skills-library roots and skills",

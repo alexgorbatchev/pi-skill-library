@@ -1,6 +1,6 @@
 # @alexgorbatchev/pi-skill-library
 
-[pi](https://pi.dev) extension that discovers `skills-library` roots and exposes their skills through `/library:<skill-name>` commands. This extension solves the problem of too many skills. There are skills that you need only occasionally and maybe don't even need them discoverable. 
+[pi](https://pi.dev) extension that discovers `skills-library` roots and exposes their skills through `/library:<skill-name>` commands. This extension solves the problem of too many skills. There are skills that you need only occasionally and maybe don't even need them discoverable.
 
 ## Install
 
@@ -39,10 +39,7 @@ Use a namespaced block in Pi settings:
 ```json
 {
   "@alexgorbatchev/pi-skills-library": {
-    "paths": [
-      "./skills-library",
-      "~/shared/pi-skills-library"
-    ]
+    "paths": ["./skills-library", "~/shared/pi-skills-library"]
   }
 }
 ```
@@ -85,4 +82,3 @@ Use the package info command to print the same report again:
 ```text
 /pi-skill-library
 ```
-
