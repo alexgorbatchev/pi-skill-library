@@ -1,6 +1,9 @@
-import type { ExtensionAPI, ExtensionContext, InputEventResult } from "@mariozechner/pi-coding-agent";
+import type { ImageContent, TextContent } from "@mariozechner/pi-ai";
+import type { ExtensionAPI, ExtensionContext, InputEventResult, Theme } from "@mariozechner/pi-coding-agent";
+import { Box, Text } from "@mariozechner/pi-tui";
 import { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { createLibraryReport } from "./createLibraryReport.js";
 import { discoverLibrarySkills } from "./discoverLibrarySkills.js";
 import { expandLibrarySkill } from "./expandLibrarySkill.js";
 import { parseLibraryCommand } from "./parseLibraryCommand.js";
@@ -8,12 +11,49 @@ import { renderLibraryReport } from "./renderLibraryReport.js";
 import type { ILibraryReportDetails, ILibrarySkillDiscovery } from "./types.js";
 
 const INFO_COMMAND_NAME = "pi-skill-library";
+const LIBRARY_MESSAGE_TYPE = "pi-skill-library.message";
 const extensionPackageRoot = dirname(dirname(fileURLToPath(import.meta.url)));
 const handledInputEventResult: InputEventResult = { action: "handled" };
+
+type LibraryMessageContent = string | (TextContent | ImageContent)[];
+type LibraryMessageLevel = "info" | "error";
+
+interface ILibraryMessageDetails {
+  level: LibraryMessageLevel;
+  reportDetails?: ILibraryReportDetails;
+}
 
 export default function piSkillLibraryExtension(pi: ExtensionAPI): void {
   let cachedLibrarySkillDiscovery: ILibrarySkillDiscovery | null = null;
   let cachedCwd = "";
+
+  pi.registerMessageRenderer<ILibraryMessageDetails>(LIBRARY_MESSAGE_TYPE, (message, _options, theme) => {
+    const details = message.details;
+    const content = getMessageTextContent(message.content);
+    const text =
+      details?.reportDetails === undefined
+        ? renderLibraryMessage(theme, content, details?.level ?? "info")
+        : renderLibraryReport(theme, details.reportDetails);
+    const box = new Box(0, 0);
+    box.addChild(new Text(text, 0, 0));
+    return box;
+  });
+
+  const sendLibraryMessage = (content: string, details: ILibraryMessageDetails): void => {
+    pi.sendMessage<ILibraryMessageDetails>({
+      customType: LIBRARY_MESSAGE_TYPE,
+      content,
+      display: true,
+      details,
+    });
+  };
+
+  const sendLibraryReport = (reportDetails: ILibraryReportDetails): void => {
+    sendLibraryMessage(createLibraryReport(reportDetails), {
+      level: "info",
+      reportDetails,
+    });
+  };
 
   const ensureLibrarySkillCommandsRegistered = (librarySkillDiscovery: ILibrarySkillDiscovery): void => {
     for (const librarySkill of librarySkillDiscovery.skills) {
@@ -25,9 +65,9 @@ export default function piSkillLibraryExtension(pi: ExtensionAPI): void {
           const requestedSkill = refreshedLibrarySkillDiscovery.skillByName.get(librarySkill.name);
           if (requestedSkill === undefined) {
             if (ctx.hasUI) {
-              ctx.ui.notify(
+              sendLibraryMessage(
                 `Library skill is no longer available: ${librarySkill.name}. Run /reload if discovery changed.`,
-                "error",
+                { level: "error" },
               );
             }
             return;
@@ -71,8 +111,7 @@ export default function piSkillLibraryExtension(pi: ExtensionAPI): void {
     const librarySkillDiscovery = await refreshLibrarySkillDiscovery(ctx.cwd);
 
     if (ctx.hasUI) {
-      const reportText = renderLibraryReport(ctx.ui.theme, createLibraryReportDetails(librarySkillDiscovery));
-      ctx.ui.notify(reportText, "info");
+      sendLibraryReport(createLibraryReportDetails(librarySkillDiscovery));
     }
   });
   pi.on("session_before_switch", onSessionChanged);
@@ -84,8 +123,7 @@ export default function piSkillLibraryExtension(pi: ExtensionAPI): void {
     handler: async (_args, ctx) => {
       const librarySkillDiscovery = await refreshLibrarySkillDiscovery(ctx.cwd);
       if (ctx.hasUI) {
-        const reportText = renderLibraryReport(ctx.ui.theme, createLibraryReportDetails(librarySkillDiscovery));
-        ctx.ui.notify(reportText, "info");
+        sendLibraryReport(createLibraryReportDetails(librarySkillDiscovery));
       }
     },
   });
@@ -106,7 +144,9 @@ export default function piSkillLibraryExtension(pi: ExtensionAPI): void {
           : `Available library skills: ${availableSkillNames.join(", ")}`;
 
       if (ctx.hasUI) {
-        ctx.ui.notify(`Unknown library skill: ${libraryCommand.skillName}. ${availableSkillSummary}`, "error");
+        sendLibraryMessage(`Unknown library skill: ${libraryCommand.skillName}. ${availableSkillSummary}`, {
+          level: "error",
+        });
       }
 
       return handledInputEventResult;
@@ -122,6 +162,24 @@ function createLibraryReportDetails(librarySkillDiscovery: ILibrarySkillDiscover
     diagnostics: librarySkillDiscovery.diagnostics,
     librarySummaries: librarySkillDiscovery.librarySummaries,
   };
+}
+
+function renderLibraryMessage(theme: Theme, content: string, level: LibraryMessageLevel): string {
+  if (level === "error") {
+    return theme.fg("error", content);
+  }
+
+  return content;
+}
+
+function getMessageTextContent(content: LibraryMessageContent): string {
+  if (typeof content === "string") {
+    return content;
+  }
+
+  return content
+    .map((part) => ("text" in part && typeof part.text === "string" ? part.text : "[non-text content omitted]"))
+    .join("\n");
 }
 
 function createLibraryCommandName(skillName: string): string {
