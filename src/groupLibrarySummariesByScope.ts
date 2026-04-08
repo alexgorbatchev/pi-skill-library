@@ -9,7 +9,7 @@ export function groupLibrarySummariesByScope(librarySummaries: ILibrarySummary[]
     librarySummariesByScope.set(displayScope, existingSummaries);
   }
 
-  const orderedScopes = ["project", "user", "path"];
+  const orderedScopes = ["project settings", "global settings", "path"];
   const orderedLibrarySummariesByScope = new Map<string, ILibrarySummary[]>();
   for (const orderedScope of orderedScopes) {
     const scopedSummaries = librarySummariesByScope.get(orderedScope);
@@ -29,9 +29,12 @@ export function groupLibrarySummariesByScope(librarySummaries: ILibrarySummary[]
 }
 
 function toDisplayScope(scope: ILibrarySummary["scope"]): string {
-  if (scope === "temporary") {
-    return "path";
+  switch (scope) {
+    case "project":
+      return "project settings";
+    case "user":
+      return "global settings";
+    case "temporary":
+      return "path";
   }
-
-  return scope;
 }

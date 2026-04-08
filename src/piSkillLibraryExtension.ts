@@ -175,7 +175,7 @@ function isLibrarySummary(value: unknown): value is ILibraryReportDetails["libra
 }
 
 function isLibrarySummaryScope(value: unknown): value is ILibraryReportDetails["librarySummaries"][number]["scope"] {
-  return value === "project settings" || value === "global settings" || value === "temporary";
+  return value === "project" || value === "user" || value === "temporary";
 }
 
 function getMessageTextContent(content: MessageContent): string {
