@@ -1,6 +1,6 @@
 {
   "name": "@alexgorbatchev/pi-skill-library",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Pi extension that exposes skills-library roots through /library:<skill-name> commands.",
   "type": "module",
   "author": "Alex Gorbatchev",
