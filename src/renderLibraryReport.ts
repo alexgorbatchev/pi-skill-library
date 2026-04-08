@@ -4,7 +4,7 @@ import { replaceHomeDirectoryWithTilde } from "./replaceHomeDirectoryWithTilde.j
 import type { ILibraryReportDetails } from "./types.js";
 
 export function renderLibraryReport(theme: Theme, details: ILibraryReportDetails): string {
-  const lines: string[] = [theme.fg("mdHeading", "[Skills Library]")];
+  const lines: string[] = [theme.fg("mdHeading", "[@alexgorbatchev/pi-skill-library]")];
   if (details.librarySummaries.length === 0) {
     lines.push(theme.fg("dim", "  No library skills were discovered."));
     return lines.join("\n");

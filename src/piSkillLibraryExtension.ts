@@ -2,7 +2,6 @@ import type { ExtensionAPI, ExtensionContext, InputEventResult } from "@mariozec
 import { Box, Text } from "@mariozechner/pi-tui";
 import { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { createLibraryReport } from "./createLibraryReport.js";
 import { discoverLibrarySkills } from "./discoverLibrarySkills.js";
 import { expandLibrarySkill } from "./expandLibrarySkill.js";
 import { parseLibraryCommand } from "./parseLibraryCommand.js";
@@ -81,12 +80,11 @@ export default function piSkillLibraryExtension(pi: ExtensionAPI): void {
   pi.on("session_start", async (_event, ctx) => {
     invalidateLibrarySkillDiscovery();
     const librarySkillDiscovery = await refreshLibrarySkillDiscovery(ctx.cwd);
-    pi.sendMessage({
-      customType: STARTUP_REPORT_MESSAGE_TYPE,
-      content: createLibraryReport(librarySkillDiscovery),
-      display: true,
-      details: createLibraryReportDetails(librarySkillDiscovery),
-    });
+
+    if (ctx.hasUI) {
+      const reportText = renderLibraryReport(ctx.ui.theme, createLibraryReportDetails(librarySkillDiscovery));
+      ctx.ui.notify(reportText, "info");
+    }
   });
   pi.on("session_before_switch", onSessionChanged);
   pi.on("session_before_fork", onSessionChanged);
@@ -96,22 +94,11 @@ export default function piSkillLibraryExtension(pi: ExtensionAPI): void {
     description: "Print the discovered skills-library roots and skills",
     handler: async (_args, ctx) => {
       const librarySkillDiscovery = await refreshLibrarySkillDiscovery(ctx.cwd);
-      pi.sendMessage({
-        customType: STARTUP_REPORT_MESSAGE_TYPE,
-        content: createLibraryReport(librarySkillDiscovery),
-        display: true,
-        details: createLibraryReportDetails(librarySkillDiscovery),
-      });
+      if (ctx.hasUI) {
+        const reportText = renderLibraryReport(ctx.ui.theme, createLibraryReportDetails(librarySkillDiscovery));
+        ctx.ui.notify(reportText, "info");
+      }
     },
-  });
-
-  pi.on("context", async (event) => {
-    return {
-      messages: event.messages.filter((message) => {
-        const messageCustomType = "customType" in message ? message.customType : undefined;
-        return messageCustomType !== STARTUP_REPORT_MESSAGE_TYPE;
-      }),
-    };
   });
 
   pi.on("input", async (event, ctx): Promise<InputEventResult | undefined> => {
@@ -188,7 +175,7 @@ function isLibrarySummary(value: unknown): value is ILibraryReportDetails["libra
 }
 
 function isLibrarySummaryScope(value: unknown): value is ILibraryReportDetails["librarySummaries"][number]["scope"] {
-  return value === "project" || value === "user" || value === "temporary";
+  return value === "project settings" || value === "global settings" || value === "temporary";
 }
 
 function getMessageTextContent(content: MessageContent): string {

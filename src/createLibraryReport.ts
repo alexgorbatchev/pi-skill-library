@@ -10,7 +10,7 @@ export function createLibraryReport(librarySkillDiscovery: ILibrarySkillDiscover
 }
 
 export function createLibraryReportFromDetails(details: ILibraryReportDetails): string {
-  const lines = ["[Skills Library]"];
+  const lines = ["[@alexgorbatchev/pi-skill-library]"];
   if (details.librarySummaries.length === 0) {
     lines.push("  No library skills were discovered.");
     return lines.join("\n");
