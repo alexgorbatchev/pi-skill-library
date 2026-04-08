@@ -75,7 +75,7 @@ Invoke a library skill directly:
 
 Discovered library skills are registered as real extension slash commands at startup and reload, so they show up in slash-command autocomplete like other commands.
 
-On startup, the extension prints a library-discovery message into the transcript listing each discovered library root and its skills. Home-directory paths are rendered with the `~/` convention.
+On startup, the extension shows a library-discovery notification listing each discovered library root and its skills.
 
 Use the package info command to print the same report again:
 

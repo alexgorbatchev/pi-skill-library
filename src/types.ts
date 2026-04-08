@@ -23,10 +23,3 @@ export interface ILibrarySkillDiscovery {
   libraryPaths: string[];
   librarySummaries: ILibrarySummary[];
 }
-
-export interface IMessageContentPart {
-  type: string;
-  text?: string;
-}
-
-export type MessageContent = string | IMessageContentPart[];
