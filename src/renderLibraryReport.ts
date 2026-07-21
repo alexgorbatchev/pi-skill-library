@@ -4,11 +4,11 @@ import { replaceHomeDirectoryWithTilde } from "./replaceHomeDirectoryWithTilde.j
 import type { ILibraryReportDetails } from "./types.js";
 
 export function renderLibraryReport(theme: Theme, details: ILibraryReportDetails): string {
-  const lines: string[] = [theme.fg("mdHeading", "[@alexgorbatchev/pi-skill-library]")];
-  if (details.librarySummaries.length === 0) {
-    lines.push(theme.fg("dim", "  No library skills were discovered."));
-    return lines.join("\n");
+  if (details.librarySummaries.length === 0 && details.diagnostics.length === 0) {
+    return "";
   }
+
+  const lines: string[] = [theme.fg("mdHeading", "[@alexgorbatchev/pi-skill-library]")];
 
   const groupedSummaries = groupLibrarySummariesByScope(details.librarySummaries);
   for (const [scope, librarySummaries] of groupedSummaries) {

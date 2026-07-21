@@ -3,11 +3,11 @@ import { replaceHomeDirectoryWithTilde } from "./replaceHomeDirectoryWithTilde.j
 import type { ILibraryReportDetails, ILibrarySummary } from "./types.js";
 
 export function createLibraryReport(details: ILibraryReportDetails): string {
-  const lines = ["[@alexgorbatchev/pi-skill-library]"];
-  if (details.librarySummaries.length === 0) {
-    lines.push("  No library skills were discovered.");
-    return lines.join("\n");
+  if (details.librarySummaries.length === 0 && details.diagnostics.length === 0) {
+    return "";
   }
+
+  const lines = ["[@alexgorbatchev/pi-skill-library]"];
 
   const librarySummariesByScope = groupLibrarySummariesByScope(details.librarySummaries);
   for (const [scope, librarySummaries] of librarySummariesByScope) {

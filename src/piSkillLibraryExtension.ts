@@ -34,6 +34,11 @@ export default function piSkillLibraryExtension(pi: ExtensionAPI): void {
       details?.reportDetails === undefined
         ? renderLibraryMessage(theme, content, details?.level ?? "info")
         : renderLibraryReport(theme, details.reportDetails);
+
+    if (!text) {
+      return undefined;
+    }
+
     const box = new Box(0, 0);
     box.addChild(new Text(text, 0, 0));
     return box;
@@ -48,7 +53,14 @@ export default function piSkillLibraryExtension(pi: ExtensionAPI): void {
     });
   };
 
-  const sendLibraryReport = (reportDetails: ILibraryReportDetails): void => {
+  const sendLibraryReport = (reportDetails: ILibraryReportDetails, isExplicit = false): void => {
+    if (reportDetails.librarySummaries.length === 0 && reportDetails.diagnostics.length === 0) {
+      if (isExplicit) {
+        sendLibraryMessage("No library skills were discovered.", { level: "info" });
+      }
+      return;
+    }
+
     sendLibraryMessage(createLibraryReport(reportDetails), {
       level: "info",
       reportDetails,
@@ -110,7 +122,8 @@ export default function piSkillLibraryExtension(pi: ExtensionAPI): void {
     invalidateLibrarySkillDiscovery();
     const librarySkillDiscovery = await refreshLibrarySkillDiscovery(ctx.cwd);
 
-    if (ctx.hasUI) {
+    const isInitialOrReload = isSessionStartEvent(event) && (event.reason === "startup" || event.reason === "reload");
+    if (isInitialOrReload && ctx.hasUI) {
       sendLibraryReport(createLibraryReportDetails(librarySkillDiscovery));
     }
   });
@@ -123,7 +136,7 @@ export default function piSkillLibraryExtension(pi: ExtensionAPI): void {
     handler: async (_args, ctx) => {
       const librarySkillDiscovery = await refreshLibrarySkillDiscovery(ctx.cwd);
       if (ctx.hasUI) {
-        sendLibraryReport(createLibraryReportDetails(librarySkillDiscovery));
+        sendLibraryReport(createLibraryReportDetails(librarySkillDiscovery), true);
       }
     },
   });
@@ -191,4 +204,20 @@ function createTransformInputEventResult(text: string): InputEventResult {
     action: "transform",
     text,
   };
+}
+
+interface ISessionStartEvent {
+  type: "session_start";
+  reason: "startup" | "reload" | "new" | "resume" | "fork";
+}
+
+function isSessionStartEvent(event: unknown): event is ISessionStartEvent {
+  return (
+    typeof event === "object" &&
+    event !== null &&
+    "type" in event &&
+    event.type === "session_start" &&
+    "reason" in event &&
+    typeof event.reason === "string"
+  );
 }
