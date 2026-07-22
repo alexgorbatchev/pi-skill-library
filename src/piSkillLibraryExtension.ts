@@ -118,7 +118,7 @@ export default function piSkillLibraryExtension(pi: ExtensionAPI): void {
     await refreshLibrarySkillDiscovery(ctx.cwd);
   };
 
-  pi.on("session_start", async (_event, ctx) => {
+  pi.on("session_start", async (event, ctx) => {
     invalidateLibrarySkillDiscovery();
     const librarySkillDiscovery = await refreshLibrarySkillDiscovery(ctx.cwd);
 
