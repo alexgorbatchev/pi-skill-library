@@ -199,7 +199,12 @@ function createLibraryCommandName(skillName: string): string {
   return `library:${skillName}`;
 }
 
-function createTransformInputEventResult(text: string): InputEventResult {
+type TransformInputEventResult = {
+  action: "transform";
+  text: string;
+};
+
+function createTransformInputEventResult(text: string): TransformInputEventResult {
   return {
     action: "transform",
     text,
@@ -207,7 +212,9 @@ function createTransformInputEventResult(text: string): InputEventResult {
 }
 
 interface ISessionStartEvent {
+  // @ts-unused-ignore shape matched from pi extension session_start event
   type: "session_start";
+  // @ts-unused-ignore shape matched from pi extension session_start event
   reason: "startup" | "reload" | "new" | "resume" | "fork";
 }
 

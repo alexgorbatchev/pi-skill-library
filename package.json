@@ -43,11 +43,12 @@
     "@types/node": "26.1.2",
     "oxfmt": "^0.62.0",
     "oxlint": "^1.77.0",
+    "ts-unused": "^3.2.0",
     "typescript": "7.0.2"
   },
   "scripts": {
     "fix": "bun --bun oxfmt --write .",
-    "check": "bun --bun oxfmt --check . && bun --bun oxlint . && tsc --noEmit",
+    "check": "bun --bun oxfmt --check . && bun --bun oxlint . && tsc --noEmit && ts-unused check tsconfig.json",
     "test": "PI_OFFLINE=1 bun x pi --no-extensions -e ./src/index.ts --list-models > /dev/null 2>&1",
     "test:local": "bun x pi -e ./src/index.ts"
   }

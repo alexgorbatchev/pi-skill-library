@@ -176,7 +176,9 @@ async function getDerivedLibraryPaths(cwd: string, extensionPackageRoot: string)
   return skillPaths;
 }
 
-function classifyExtensionScope(extensionPackageRoot: string, cwd: string): LibraryPathScope {
+type ExtensionScope = "project" | "user";
+
+function classifyExtensionScope(extensionPackageRoot: string, cwd: string): ExtensionScope {
   const normalizedPackageRoot = path.resolve(extensionPackageRoot);
   const normalizedProjectRoot = path.resolve(cwd);
   const projectPiRoot = path.resolve(cwd, ".pi");
